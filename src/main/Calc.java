@@ -49,23 +49,6 @@ public class Calc {
     };
 
     public static int getWeekday(int d, int m, int y) {
-        StringBuilder s = new StringBuilder();
-        s.append((d<10)?"0":"");
-        s.append(d);
-        s.append((m<10)?"0":"");
-        s.append(m);
-        s.append(y);
-
-        //System.out.println(s.toString());
-        return getWeekday(s.toString());
-    }
-
-    public static int getWeekday(String date) {
-        int d = Integer.parseInt(date.substring(0,2).replace("0", ""));
-        int m = Integer.parseInt(date.substring(2,4).replace("0", ""));
-        int y = Integer.parseInt(date.substring(4));
-        //System.out.println(d+"."+m+"."+y);
-
         if (y < 1901)
             return -1;
 
@@ -81,5 +64,14 @@ public class Calc {
         if (res < 0)
             res += 7;
         return res;
+    }
+
+    public static int getWeekday(String date) {
+        int d = Integer.parseInt(date.substring(0,2).replace("0", ""));
+        int m = Integer.parseInt(date.substring(2,4).replace("0", ""));
+        int y = Integer.parseInt(date.substring(4));
+        //System.out.println(d+"."+m+"."+y);
+
+        return getWeekday(d, m, y);
     }
 }
