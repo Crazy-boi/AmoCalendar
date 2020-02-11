@@ -21,10 +21,27 @@ public class Calendar extends Application {
     public static Stage window;
     public static Scene introScene, mainScene;
 
-    static Border introBtn1Border = new Border(new BorderStroke(Paint.valueOf("#000000"), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5)));
+    //Presets
+    Border introBtn1Border = new Border(new BorderStroke(Paint.valueOf("#000000"), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5)));
 
-    static Label mLb1;
-    static String testForMLb1;
+    //Nodes
+    VBox inVbOuter;
+        Label inLbName;
+        Button inBtnStart;
+
+    BorderPane mBpOuter;
+        HBox mHbTop;
+            Label mLbTopDate;
+        StackPane mVbLeft;
+            Button mBtnLeft;
+        StackPane mVbRight;
+            Button mBtnRight;
+        StackPane mPMid;
+            Label mLb1;
+        GridPane mGpMid;
+
+    //Stuff
+    String testForMLb1;
 
     public static void main(String[] args) {
         launch(args);
@@ -35,18 +52,28 @@ public class Calendar extends Application {
         window = stage;
         window.setTitle(APP_TITLE);
         window.getIcons().add(new Image(Calendar.class.getResourceAsStream("icon.png")));
+        window.setMinWidth(450);
+        window.setMinHeight(350);
 
         //Definitions
         //Intro
-        VBox inVbOuter = new VBox();
-        Label inLbName = new Label();
-        Button inBtnStart = new Button();
+        inVbOuter = new VBox();
+            inLbName = new Label();
+            inBtnStart = new Button();
 
         introScene = new Scene(inVbOuter, width, height);
 
         //Main
-        BorderPane mBpOuter = new BorderPane();
-        mLb1 = new Label();
+        mBpOuter = new BorderPane();
+            mHbTop = new HBox();
+                mLbTopDate = new Label();
+            mVbLeft = new StackPane();
+                mBtnLeft = new Button();
+            mVbRight = new StackPane();
+                mBtnRight = new Button();
+            mPMid = new StackPane();
+                mLb1 = new Label();
+            mGpMid = new GridPane();
 
         mainScene = new Scene(mBpOuter, width, height);
 
@@ -59,7 +86,7 @@ public class Calendar extends Application {
 
         inBtnStart.setText("Start");
         inBtnStart.setPrefSize(220, 40);
-        inBtnStart.setFont(new Font("Arial black", 30));
+        inBtnStart.setFont(stdFont(30));
         inBtnStart.setBorder(introBtn1Border);
         inBtnStart.setOnAction(e -> {
             calcDates();
@@ -69,24 +96,80 @@ public class Calendar extends Application {
 
         inVbOuter.setAlignment(Pos.CENTER);
         inVbOuter.setSpacing(50);
-        inVbOuter.getChildren().addAll(inLbName, inBtnStart);
+        inVbOuter.getChildren().add(inLbName);
+        inVbOuter.getChildren().add(inBtnStart);
 
 
         //Main scene
+        //bp left
+        mLbTopDate.setText("Montag, 03. Februar 2020");
+        mLbTopDate.setFont(stdFont(23));
+        mLbTopDate.setTextFill(Paint.valueOf("#eef"));
+        mLbTopDate.setPadding(new Insets(0, 0, 0, 15));
+
+        //bp left
+        mBtnLeft.setText("<");
+        mBtnLeft.setFont(stdFont(40));
+        mBtnLeft.setTextFill(Paint.valueOf("#aad"));
+        mBtnLeft.setBackground(null);
+        mBtnLeft.setOnAction(e -> {
+            shiftView(false);
+        });
+
+        //bp center
         mLb1.setText("XD");
         mLb1.setFont(new Font("404Error", 200));
         test();
         mLb1.setOnMouseClicked(e -> {
             window.setScene(introScene);
         });
-        mBpOuter.setCenter(mLb1);
+
+        //bp right
+        mBtnRight.setText(">");
+        mBtnRight.setFont(stdFont(40));
+        mBtnRight.setTextFill(Paint.valueOf("#aad"));
+        mBtnRight.setBackground(null);
+        mBtnRight.setOnAction(e -> {
+            shiftView(true);
+        });
+
+        //container
+        mHbTop.setAlignment(Pos.CENTER_LEFT);
+        mHbTop.setBackground(bgColor("#456"));
+        mHbTop.setPrefHeight(50);
+        mHbTop.getChildren().add(mLbTopDate);
+
+        mVbLeft.setAlignment(Pos.CENTER);
+        mVbLeft.setBackground(bgColor("#345"));
+        mVbLeft.setOnMouseClicked(e -> {
+            shiftView(false);
+        });
+        mVbLeft.getChildren().add(mBtnLeft);
+
+        mVbRight.setAlignment(Pos.CENTER);
+        mVbRight.setBackground(bgColor("#345"));
+        mVbRight.setOnMouseClicked(e -> {
+            shiftView(true);
+        });
+        mVbRight.getChildren().add(mBtnRight);
+
+        mPMid.setAlignment(Pos.CENTER);
+        mPMid.setBackground(bgColor("#ddd", 0, 0));
+        mPMid.getChildren().add(mLb1);
+
+        mGpMid.setBackground(bgColor("#234"));
+
+        mBpOuter.setTop(mHbTop);
+        mBpOuter.setLeft(mVbLeft);
+        mBpOuter.setCenter(mGpMid);
+        mBpOuter.setRight(mVbRight);
 
 
         window.setScene(introScene);
         window.show();
     }
 
-    static void test() {
+    void test() {
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < 6; i++)
             s.append(Integer.toHexString((int) (Math.random() * 16)));
@@ -94,7 +177,28 @@ public class Calendar extends Application {
         mLb1.setTextFill(Paint.valueOf("#"+testForMLb1));
     }
 
-    static void calcDates() {
+    String getCurrentDate() {
+        //String s = Calc.currentDate();
 
+        //Format
+
+        return null;
+    }
+
+    void calcDates() {
+
+    }
+
+    void shiftView(boolean toFuture) {
+        System.out.println(toFuture);
+    }
+
+    //Comfy methods
+    Background bgColor(String c, double ... d) {
+        return new Background(new BackgroundFill(Paint.valueOf(c), new CornerRadii((d.length>0)?d[0]:0), new Insets((d.length>1)?d[1]:0)));
+    }
+
+    Font stdFont(double s) {
+        return new Font("Arial black", s);
     }
 }
