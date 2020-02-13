@@ -39,9 +39,14 @@ public class Calendar extends Application {
         StackPane mPMid;
             Label mLb1;
         GridPane mGpMid;
+            Button[] mBtnDate;
 
     //Stuff
     String testForMLb1;
+
+    static final Paint BLACK = Paint.valueOf("#000");
+    static final Paint WHITE = Paint.valueOf("#fff");
+    static final Paint VERY_LIGHT_BLUE = Paint.valueOf("#eff");
 
     public static void main(String[] args) {
         launch(args);
@@ -74,6 +79,12 @@ public class Calendar extends Application {
             mPMid = new StackPane();
                 mLb1 = new Label();
             mGpMid = new GridPane();
+                mBtnDate = new Button[42];
+
+
+        for (int i = 0; i < mBtnDate.length; i++) {
+            mBtnDate[i] = initBtnDate();
+        }
 
         mainScene = new Scene(mBpOuter, width, height);
 
@@ -104,7 +115,7 @@ public class Calendar extends Application {
         //bp left
         mLbTopDate.setText("Montag, 03. Februar 2020");
         mLbTopDate.setFont(stdFont(23));
-        mLbTopDate.setTextFill(Paint.valueOf("#eef"));
+        mLbTopDate.setTextFill(VERY_LIGHT_BLUE);
         mLbTopDate.setPadding(new Insets(0, 0, 0, 15));
 
         //bp left
@@ -118,7 +129,7 @@ public class Calendar extends Application {
 
         //bp center
         mLb1.setText("XD");
-        mLb1.setFont(new Font("404Error", 200));
+        mLb1.setFont(new Font("Times New Roman", 200));
         test();
         mLb1.setOnMouseClicked(e -> {
             window.setScene(introScene);
@@ -154,10 +165,16 @@ public class Calendar extends Application {
         mVbRight.getChildren().add(mBtnRight);
 
         mPMid.setAlignment(Pos.CENTER);
-        mPMid.setBackground(bgColor("#ddd", 0, 0));
+        mPMid.setBackground(bgColor("#234", 0, 0));
         mPMid.getChildren().add(mLb1);
 
         mGpMid.setBackground(bgColor("#234"));
+        mGpMid.setPadding(new Insets(15));
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 7; j++) {
+                mGpMid.add(mBtnDate[i*7+j], i, j);
+            }
+        }
 
         mBpOuter.setTop(mHbTop);
         mBpOuter.setLeft(mVbLeft);
@@ -165,8 +182,23 @@ public class Calendar extends Application {
         mBpOuter.setRight(mVbRight);
 
 
-        window.setScene(introScene);
+        window.setScene(mainScene);
         window.show();
+    }
+
+    Button initBtnDate() {
+        Button b = new Button("23");
+        b.prefWidthProperty().bind(mGpMid.widthProperty().divide(2));
+        b.setBackground(bgColor("#445"));
+        b.setFont(stdFont(24));
+        b.setTextFill(VERY_LIGHT_BLUE);
+        b.setOnMousePressed(e -> {
+            b.setBackground(bgColor("#223"));
+        });
+        b.setOnMouseReleased(e -> {
+            b.setBackground(bgColor("#445"));
+        });
+        return b;
     }
 
     void test() {
