@@ -1,5 +1,7 @@
 package main;
 
+import java.sql.SQLOutput;
+
 public class Calc {
     public static int[][] weekdays = {
             {2,5,5,1,3,6,1,4,0,2,5,0},  //1901
@@ -73,5 +75,57 @@ public class Calc {
         //System.out.println(d+"."+m+"."+y);
 
         return getWeekday(d, m, y);
+    }
+
+    public static int[] getCurrentDate() {
+        long time = System.currentTimeMillis();
+        // 01.01.1970 00:00 GMT/UTC
+        // day in seconds: 86400
+        // year in seconds: 31536000
+        // 2 years in seconds: 63072000
+        // 4 years (+ 1 day) in seconds: 126230400
+
+        // year calculation
+        int year = (int) (1972 + ((((time / 1000) - 63072000) / 126230400) * 4));
+
+        // month calculation
+        int years = year - 1972;
+        int yearsP = (year - 1972) / 4;
+        int lYear = 0;
+        if (years - (yearsP * 4) == 0)
+            lYear = lYear + 1;
+        int month = (int) ((((((((time / 1000) - 63072000)- ((yearsP * 126230400) + (years - yearsP * 4) * 31536000)) + 86400) / 86400) *12) / (365 + lYear)) +1);
+
+        // day calculation
+        int day = (int) (((((time / 1000) - 63072000)- ((yearsP * 126230400) + (years - yearsP * 4) * 31536000)) + 86400) / 86400);
+        if (month == 2) {
+            day = day - 31;
+        } else if (month == 3) {
+            day = day - 59;
+        } else if (month == 4) {
+            day = day - 90;
+        } else if (month == 5) {
+            day = day - 120;
+        } else if (month == 6) {
+            day = day - 151;
+        } else if (month == 7) {
+            day = day - 181;
+        } else if (month == 8) {
+            day = day - 212;
+        } else if (month == 9) {
+            day = day - 243;
+        } else if (month == 10) {
+            day = day - 273;
+        } else if (month == 11) {
+            day = day - 304;
+        } else if (month == 12) {
+            day = day - 334;
+        } if (day >= 60)
+            day = day + lYear;
+
+        //System.out.println(day + "." + month + "." + year);
+        // System.out.println("Systemtime: " + time); // dev. information
+        // System.out.println("Leapyear: " + lYear); // dev. information
+        return new int[] {day, month, year};
     }
 }
