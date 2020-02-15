@@ -16,8 +16,6 @@ public class Calendar extends Application {
 
     public static final String APP_TITLE = "AmoCalendar";
 
-    public static int width = 800, height = 600;
-
     public static Stage window;
     public static Scene introScene, mainScene;
 
@@ -39,14 +37,16 @@ public class Calendar extends Application {
         StackPane mPMid;
             Label mLb1;
         GridPane mGpMid;
-            Button[] mBtnDate;
+            HBox[] mHbDate;
 
     //Stuff
     String testForMLb1;
+    boolean[][] mHbDateMouse = new boolean[42][2];
 
     static final Paint BLACK = Paint.valueOf("#000");
     static final Paint WHITE = Paint.valueOf("#fff");
     static final Paint VERY_LIGHT_BLUE = Paint.valueOf("#eff");
+    static final Paint DATE_BG_BLUE = Paint.valueOf("#234");
 
     public static void main(String[] args) {
         launch(args);
@@ -57,8 +57,6 @@ public class Calendar extends Application {
         window = stage;
         window.setTitle(APP_TITLE);
         window.getIcons().add(new Image(Calendar.class.getResourceAsStream("icon.png")));
-        window.setMinWidth(450);
-        window.setMinHeight(350);
 
         //Definitions
         //Intro
@@ -66,7 +64,7 @@ public class Calendar extends Application {
             inLbName = new Label();
             inBtnStart = new Button();
 
-        introScene = new Scene(inVbOuter, width, height);
+        introScene = new Scene(inVbOuter, 800, 600);
 
         //Main
         mBpOuter = new BorderPane();
@@ -79,14 +77,14 @@ public class Calendar extends Application {
             mPMid = new StackPane();
                 mLb1 = new Label();
             mGpMid = new GridPane();
-                mBtnDate = new Button[42];
+                mHbDate = new HBox[42];
 
 
-        for (int i = 0; i < mBtnDate.length; i++) {
-            mBtnDate[i] = initBtnDate();
+        for (int i = 0; i < mHbDate.length; i++) {
+            mHbDate[i] = initHbDate(i);
         }
 
-        mainScene = new Scene(mBpOuter, width, height);
+        mainScene = new Scene(mBpOuter);
 
         //Advanced
         //Intro scene
@@ -120,6 +118,8 @@ public class Calendar extends Application {
 
         //bp left
         mBtnLeft.setText("<");
+        mBtnLeft.setMinWidth(90);
+        mBtnLeft.setPrefWidth(90);
         mBtnLeft.setFont(stdFont(40));
         mBtnLeft.setTextFill(Paint.valueOf("#aad"));
         mBtnLeft.setBackground(null);
@@ -137,6 +137,8 @@ public class Calendar extends Application {
 
         //bp right
         mBtnRight.setText(">");
+        mBtnRight.setMinWidth(90);
+        mBtnRight.setPrefWidth(90);
         mBtnRight.setFont(stdFont(40));
         mBtnRight.setTextFill(Paint.valueOf("#aad"));
         mBtnRight.setBackground(null);
@@ -145,9 +147,10 @@ public class Calendar extends Application {
         });
 
         //container
+        mHbTop.setMinSize(0, 50);
+        mHbTop.setPrefSize(0, 50);
         mHbTop.setAlignment(Pos.CENTER_LEFT);
         mHbTop.setBackground(bgColor("#456"));
-        mHbTop.setPrefHeight(50);
         mHbTop.getChildren().add(mLbTopDate);
 
         mVbLeft.setAlignment(Pos.CENTER);
@@ -168,11 +171,11 @@ public class Calendar extends Application {
         mPMid.setBackground(bgColor("#234", 0, 0));
         mPMid.getChildren().add(mLb1);
 
-        mGpMid.setBackground(bgColor("#234"));
+        mGpMid.setBackground(bg(DATE_BG_BLUE));
         mGpMid.setPadding(new Insets(15));
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 7; j++) {
-                mGpMid.add(mBtnDate[i*7+j], i, j);
+                mGpMid.add(mHbDate[i*7+j], j, i);
             }
         }
 
@@ -182,21 +185,48 @@ public class Calendar extends Application {
         mBpOuter.setRight(mVbRight);
 
 
+        window.setMinWidth(16+ mBtnLeft.getMinWidth() + mGpMid.getPadding().getLeft() + mHbDate[0].getMinWidth()*7 + mGpMid.getPadding().getRight() + mBtnRight.getMinWidth());
+        window.setMinHeight(38+ mHbTop.getMinHeight() + mGpMid.getPadding().getTop() + mHbDate[0].getMinHeight()*6 + mGpMid.getPadding().getBottom());
+
+        window.setWidth(750);
+        window.setHeight(700);
+
         window.setScene(mainScene);
         window.show();
     }
 
-    Button initBtnDate() {
-        Button b = new Button("23");
-        b.prefWidthProperty().bind(mGpMid.widthProperty().divide(2));
+    HBox initHbDate(int i) {
+        HBox b = new HBox();
+        b.setMinSize(60, 80);
+        b.prefWidthProperty().bind(mGpMid.widthProperty());
+        b.prefHeightProperty().bind(mGpMid.heightProperty());
         b.setBackground(bgColor("#445"));
-        b.setFont(stdFont(24));
-        b.setTextFill(VERY_LIGHT_BLUE);
+        b.setPadding(new Insets(0));
+        b.setAlignment(Pos.TOP_CENTER);
+        //b.setFont(stdFont(24));
+        //b.setTextFill(VERY_LIGHT_BLUE);
+        b.setOnMouseEntered(e -> {
+            b.setBackground(bgColor("#334"));
+        });
+        b.setOnMouseExited(e -> {
+            if (mHbDateMouse[i][0])
+                mHbDateMouse[i][1] = true;
+            else
+                b.setBackground(bgColor("#445"));
+        });
         b.setOnMousePressed(e -> {
+            mHbDateMouse[i][0] = true;
             b.setBackground(bgColor("#223"));
         });
         b.setOnMouseReleased(e -> {
-            b.setBackground(bgColor("#445"));
+            if (mHbDateMouse[i][1])
+                b.setBackground(bgColor("#445"));
+            else {
+                b.setBackground(bgColor("#445"));
+                AddEventPopup.show("DDMMYYYY");
+            }
+            mHbDateMouse[i][0] = false;
+            mHbDateMouse[i][1] = false;
         });
         return b;
     }
@@ -226,11 +256,15 @@ public class Calendar extends Application {
     }
 
     //Comfy methods
-    Background bgColor(String c, double ... d) {
+    public static Background bg(Paint p, double ... d) {
+        return new Background(new BackgroundFill(p, new CornerRadii((d.length>0)?d[0]:0), new Insets((d.length>1)?d[1]:0)));
+    }
+
+    public static Background bgColor(String c, double ... d) {
         return new Background(new BackgroundFill(Paint.valueOf(c), new CornerRadii((d.length>0)?d[0]:0), new Insets((d.length>1)?d[1]:0)));
     }
 
-    Font stdFont(double s) {
+    public static Font stdFont(double s) {
         return new Font("Arial black", s);
     }
 }
